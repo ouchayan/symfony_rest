@@ -1,0 +1,11 @@
+app_feature:
+    resource: AppBundle\Controller\Admin\FeatureController
+    type:     rest
+
+app_role:
+    resource: AppBundle\Controller\Admin\RoleController
+    type:     rest
+    
+app_user:
+    resource: AppBundle\Controller\Admin\UserController
+    type:     rest

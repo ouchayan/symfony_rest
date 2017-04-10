@@ -1,0 +1,102 @@
+# Learn more about services, parameters and containers at
+# http://symfony.com/doc/current/book/service_container.html
+parameters:
+#    parameter_name: value
+
+services:
+#    service_name:
+#        class: AppBundle\Directory\ClassName
+#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+
+# Repisitory classes
+
+    feature_repository:
+        class: Doctrine\ORM\EntityRepository
+        factory_service: doctrine.orm.default_entity_manager
+        factory_method: getRepository
+        arguments:
+            - AppBundle\Entity\Feature
+            
+    role_repository:
+        class: Doctrine\ORM\EntityRepository
+        factory_service: doctrine.orm.default_entity_manager
+        factory_method: getRepository
+        arguments:
+            - AppBundle\Entity\Role
+
+    user_repository:
+        class: Doctrine\ORM\EntityRepository
+        factory_service: doctrine.orm.default_entity_manager
+        factory_method: getRepository
+        arguments:
+            - AppBundle\Entity\User
+
+# handler classes
+
+    feature_handler:
+        class: AppBundle\Handler\FeatureHandler
+        arguments:
+            - @feature_repository
+            - @form.handler.feature_form_handler
+            
+    role_handler:
+        class: AppBundle\Handler\RoleHandler
+        arguments:
+            - @role_repository
+            - @form.handler.role_form_handler
+
+    user_handler:
+        class: AppBundle\Handler\UserHandler
+        arguments:
+            - @user_repository
+            - @form.handler.user_form_handler
+            - @service_container
+
+# formeType classes
+
+    form.type.feature:
+        class: AppBundle\Form\Type\FeatureType
+        tags:
+            - { name: form.type, alias: feature_form }
+            
+    form.type.role:
+        class: AppBundle\Form\Type\RoleType
+        tags:
+            - { name: form.type, alias: role_form }
+            
+    form.type.user:
+        class: AppBundle\Form\Type\UserType
+        tags:
+            - { name: form.type, alias: user_form }
+
+# formeType and handler classes
+
+    form.handler.feature_form_handler:
+        class: AppBundle\Form\Handler\FormHandler
+        arguments:
+            - @doctrine.orm.entity_manager
+            - @form.factory
+            - @form.type.feature
+            
+    form.handler.role_form_handler:
+        class: AppBundle\Form\Handler\FormHandler
+        arguments:
+            - @doctrine.orm.entity_manager
+            - @form.factory
+            - @form.type.role
+            
+    form.handler.user_form_handler:
+        class: AppBundle\Form\Handler\FormHandler
+        arguments:
+            - @doctrine.orm.entity_manager
+            - @form.factory
+            - @form.type.user
+            
+            
+    published_message.listener:
+        class: AppBundle\Listener\ExceptionListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
+    appbundle.util.inflector:
+        class: AppBundle\Util\NoopInflector
